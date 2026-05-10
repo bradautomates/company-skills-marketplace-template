@@ -4,6 +4,14 @@ A GitHub template for spinning up a **private skills marketplace** for your team
 
 > **Stop copy-pasting skills around in Slack.** If your team uses Claude Code or Codex individually, this template gives you a shared execution layer: one private repo, one install command per teammate, and skills that update across the team automatically.
 
+## Why use this
+
+- **Tool-agnostic execution layer.** New AI coding tools drop every month. You don't want your team's skills locked into one vendor's ecosystem — this template gives you a shared layer that works across **two of the most popular AI agent harnesses** (Claude Code and Codex CLI) from a single source of truth. Add another runtime later? Mirror the manifest and you're done.
+- **Scales with your team.** Start with one `team-skills` plugin on day one. When you grow into distinct functions, scaffold new plugins per area of the business — `sales-skills`, `ops-skills`, `marketing-skills` — with one natural-language command. Teammates install only what's relevant to them.
+- **Free to set up and run.** No Teams or Enterprise plan required. No SaaS fee, no extra services, no infrastructure to host. You're using primitives that ship in the box with both runtimes.
+- **Version control and collaboration built in.** Skills are just files in a Git repo, so every change is reviewable in PRs, every version is recoverable, and teammates can collaborate on skill authoring the way they already collaborate on code.
+- **Private by default.** Your skills stay in your private GitHub repo. Auth piggybacks on the GitHub access your team already has.
+
 ## What this is
 
 Both Claude Code and Codex support private plugin marketplaces natively, with near-identical primitives. This template wires up both with sensible defaults so you don't have to read either spec:
