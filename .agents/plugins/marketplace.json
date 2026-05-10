@@ -1,0 +1,32 @@
+{
+  "name": "team-marketplace",
+  "interface": {
+    "displayName": "REPLACE_ME_company_name Team Skills"
+  },
+  "plugins": [
+    {
+      "name": "team-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/team-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "marketplace-admin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/marketplace-admin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

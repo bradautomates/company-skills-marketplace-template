@@ -1,0 +1,5 @@
+{
+  "name": "marketplace-admin",
+  "version": "0.1.0",
+  "description": "Owner-only tooling for managing this skills marketplace. Provides the marketplace-manager skill: init, import skills from anywhere on disk, add plugins, publish, and check status. Do not install on teammate machines."
+}

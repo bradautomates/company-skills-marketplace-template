@@ -1,0 +1,7 @@
+{
+  "name": "team-skills",
+  "version": "0.1.0",
+  "description": "Skills shared across the REPLACE_ME_company_name team.",
+  "license": "MIT",
+  "skills": "./skills/"
+}

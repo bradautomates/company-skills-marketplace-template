@@ -1,0 +1,19 @@
+{
+  "name": "team-marketplace",
+  "owner": {
+    "name": "REPLACE_ME_company_name"
+  },
+  "description": "Private skills marketplace for REPLACE_ME_company_name.",
+  "plugins": [
+    {
+      "name": "team-skills",
+      "source": "./plugins/team-skills",
+      "description": "Skills shared across the team."
+    },
+    {
+      "name": "marketplace-admin",
+      "source": "./plugins/marketplace-admin",
+      "description": "Owner-only tooling for managing this marketplace. Do not install on teammate machines."
+    }
+  ]
+}
