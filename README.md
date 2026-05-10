@@ -21,103 +21,153 @@ Business owners and small-team operators who already use Claude Code or Codex in
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) **or** [Codex CLI](https://github.com/openai/codex) (or both) installed
-- [`gh` CLI](https://cli.github.com/) authenticated (`gh auth login`) — used for private repo access and visibility checks
-- A code editor (e.g. VS Code) to open the cloned repo in
 - A GitHub account with permission to create private repos
+- A code editor (e.g. VS Code) to open the cloned repo in
 
-## Owner setup walkthrough
+> The `gh` CLI is used under the hood for private repo access. If a step below fails because `gh` isn't installed or authenticated, just ask Claude Code: *"install the GitHub CLI and authenticate with my GitHub account"* — then retry the failing step.
 
-There are two things you'll do: get a **personalized copy of this template on GitHub**, and **install the management skill** into your runtime so it can do the rest. The walkthrough below is explicit about which is which — once you've done it, ongoing skill management is a one-line natural-language trigger from anywhere on disk.
+## First-time setup — Claude Code
 
-### 1. Create your private repo from this template
+Click **Use this template** → **Create a new repository** at the top of this page. Set visibility to **Private**, name it (e.g. `acme-skills-marketplace`), and create. From here on, that new repo — not this template — is your marketplace.
 
-At the top of this GitHub page, click the green **Use this template** → **Create a new repository** button. On the next screen:
+### 1. Clone the repo locally
 
-- Set **Visibility** to **Private**.
-- Name the repo whatever you want (e.g. `acme-skills-marketplace`).
-- Click **Create repository**.
+The easiest way is to ask Claude Code to do it for you:
 
-This creates a brand-new repo under your GitHub account with all of this code copied in. From here on, that new repo — *not* this template — is your marketplace. Everything below operates against the new repo.
+> *clone `<your-username>/<your-new-repo>` into ~/code and open it*
 
-### 2. Clone the new repo locally and open it in your editor
+Or run the commands manually:
 
 ```
 gh repo clone <your-username>/<your-new-repo>
 cd <your-new-repo>
-code .   # or your editor of choice
+code .
 ```
 
-The local clone is the **working copy**: it's where the management skill will edit files, commit, and push back to GitHub. You'll trigger the skill from a Claude Code or Codex session running inside this directory, so open it in your editor now.
+### 2. Install the management plugin (first time only)
 
-### 3. Confirm `gh` is signed in
+In the **Claude Desktop app**:
 
-```
-gh auth status
-```
+- **Customise** → **+** button → **Create Plugin** → **Add marketplace**
+- Enter your repo as `<your-username>/<your-new-repo>`
+- Install the `marketplace-admin` plugin from the marketplace that appears
 
-If not signed in: `gh auth login`. The `gh` CLI is what authenticates the marketplace install — for you in the next step, and for each teammate later — so it must be set up first.
+Or, equivalently, from a Claude Code session:
 
-### 4. Install the management skill into your runtime
-
-This is a separate track from the local clone: the local clone is the working copy, but the runtime install is how the **management skill itself** gets loaded so you can trigger it. The first command points your runtime at your new GitHub repo; the second pulls the admin plugin from it.
-
-**Claude Code:**
 ```
 /plugin marketplace add <your-username>/<your-new-repo>
 /plugin install marketplace-admin@team-marketplace
 ```
 
-**Codex CLI:**
+> *(The marketplace is called `team-marketplace` at this point — that's the pre-init default. Step 3 renames it.)*
+>
+> **If install fails:** the `gh` CLI probably isn't installed or signed in. Ask Claude Code to install and authenticate `gh`, then retry.
+
+### 3. Run setup with the management skill
+
+Open the local clone from step 1 in Claude Code. From a session inside that directory, say:
+
+> *setup my marketplace*
+
+The `marketplace-manager` skill walks you through:
+
+- Your company name
+- Your marketplace name (replaces `team-marketplace`)
+- License (MIT or UNLICENSED)
+
+It rewrites all the placeholders across both runtimes' manifests, swaps this marketing README for a teammate-facing one with install commands inline, and commits.
+
+### 4. Push to GitHub
+
+The skill pushes for you. (If you skipped that prompt, just run `git push`.)
+
+### 5. Refresh the plugin
+
+Your marketplace was renamed in step 3, so update the plugin reference in your runtime:
+
+- **Claude Desktop app:** Customise → marketplace → **Update** (or **Refresh**)
+- **CLI:** `/plugin marketplace update <new-marketplace-name>`
+
+### 6. Give teammates access and share the repo
+
+GitHub → your repo → **Settings** → **Collaborators and teams** → invite each teammate's GitHub account (or grant a team read access). Without this, their install will fail with a not-found error.
+
+Then share the repo URL. After step 3, the README on the front page has copy-paste install commands inline for both Claude Code and Codex.
+
+## First-time setup — Codex CLI
+
+Same shape as Claude Code, with one difference at the end: Codex has no auto-update, so you reload your Codex session to pick up the renamed marketplace.
+
+### 1. Clone the repo locally
+
+Same as above — `gh repo clone <your-username>/<your-new-repo>`, `cd` in, open in your editor.
+
+### 2. Install the management plugin
+
 ```
 codex plugin marketplace add <your-username>/<your-new-repo>
 codex plugin install marketplace-admin@team-marketplace
 ```
 
-> The marketplace name is `team-marketplace` here because that's the default *before* you've personalized the repo. Step 5 renames it to whatever you choose.
+If this fails because `gh` isn't set up, install/authenticate it and retry.
 
-### 5. Run setup by triggering the management skill
+### 3. Run setup
 
-From a Claude Code or Codex session **inside the local clone from step 2** (your editor's integrated terminal works), say something like:
+From a Codex session inside the local clone:
 
-> *set up the marketplace*
+> *setup my marketplace*
 
-The `marketplace-manager` skill activates and asks you for:
+Same prompts as Claude Code (company name, marketplace name, license).
 
-- Company name
-- Marketplace name (replaces `team-marketplace` across both runtimes' manifests)
-- License preference (MIT or UNLICENSED)
+### 4. Push to GitHub
 
-It then rewrites every `REPLACE_ME_*` placeholder in the manifests and configs, swaps this marketing README for a teammate-facing one with install commands inline, commits, and pushes back to your GitHub repo. Your marketplace is now personalized and ready for teammates.
+The skill pushes for you.
 
-### 6. Give teammates access to the private repo
+### 5. Reload Codex
 
-The marketplace lives in a private repo, so each teammate's GitHub account needs read access before they can install from it. On GitHub:
+Quit and restart your Codex session, then pull the renamed marketplace:
 
-- Your repo → **Settings** → **Collaborators and teams** → **Add people** (or **Add teams**)
-- Invite each teammate's GitHub account (or grant a team read access — preferred for groups of more than a few)
+```
+codex plugin marketplace upgrade <new-marketplace-name>
+```
 
-Without this, the `marketplace add` command on their machine will fail with a not-found / permission error.
+### 6. Give teammates access and share the repo
 
-### 7. Share the repo URL with teammates
+Same as Claude Code step 6.
 
-Send them the link to your private repo. After step 5, the README they see on landing is the teammate-facing one with the exact install commands inline for both Claude Code and Codex — no docs/ folder spelunking required.
+## Adding a new skill
 
-For reference, the longer install guides are at [`docs/install-claude-code.md`](docs/install-claude-code.md) and [`docs/install-codex.md`](docs/install-codex.md).
+Once `marketplace-admin` is installed, you can add skills from anywhere on disk — no need to be inside the marketplace clone.
 
-### Updates
+1. Open the repo or directory where the skill lives in Claude Code or Codex.
+2. Trigger the management skill: *"add this skill to the team marketplace"* (name the skill if there are several to choose from).
+3. The skill copies the skill into your `team-skills` plugin (or whichever plugin you point it at), bumps the plugin version, commits, and pushes.
+4. Teammates pick it up on their next runtime startup (with auto-update on) or by running an upgrade command.
 
-- **Claude Code:** teammates open `/plugin` → **Marketplaces** tab → toggle **Enable auto-update** once. New skills land on next startup. Manual fallback: `/plugin marketplace update`.
-- **Codex CLI:** Codex has no auto-update toggle yet. Teammates run `codex plugin marketplace upgrade <marketplace-name>` to pull updates.
+> **Recommend to your team:** in Claude Code, run `/plugin`, select your marketplace, and toggle **Enable auto-update**. New skills land automatically on next startup. Codex teammates run `codex plugin marketplace upgrade <marketplace>` periodically.
 
-### Adding skills going forward
+## Adding a new plugin (e.g. sales, marketing, ops)
 
-From any Claude Code or Codex session **anywhere on your machine** (no need to be inside the clone — the skill remembers its path), trigger the management skill with phrases like:
+When one `team-skills` plugin starts feeling too broad, split into domain plugins. From anywhere on disk, trigger the management skill:
 
-- *"import this skill into the team marketplace"* — copies a skill from `~/.claude/skills/<name>/` or `~/.codex/skills/<name>/` into the marketplace.
+> *add a new plugin called `sales-skills` to the marketplace*
+
+It scaffolds the plugin directory, registers it in both runtimes' manifests, commits, and pushes. Teammates install the new plugin selectively:
+
+```
+/plugin install sales-skills@<your-marketplace-name>
+# or
+codex plugin install sales-skills@<your-marketplace-name>
+```
+
+## Other ongoing flows
+
+The management skill also handles:
+
 - *"publish to the marketplace"* — commits and pushes pending changes.
 - *"marketplace status"* — shows pending changes and recent ships.
 
-The skill saves your local clone's path at `~/.config/claude-marketplace-admin/config.json` so it can find the working copy from any cwd. Both runtimes' manifests stay in sync automatically.
+It saves your local clone's path at `~/.config/claude-marketplace-admin/config.json` so it works from any working directory. Both runtimes' manifests stay in sync automatically — never edit one without the other.
 
 ## What's in the box
 
